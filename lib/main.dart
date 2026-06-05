@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:learn_bloc/core/secrets/app_secrets.dart';
 import 'package:learn_bloc/core/theme/theme.dart';
+import 'package:learn_bloc/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:learn_bloc/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:learn_bloc/features/auth/domain/usecase/user_sign_up.dart';
 import 'package:learn_bloc/features/auth/presentation/pages/signin_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +16,20 @@ void main() async {
     anonKey: AppSecrets.supabaseAnonKey,
   );
 
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => AuthBloc(
+            userSignUp: UserSignUp(
+              AuthRepositoryImpl(AuthRemoteDataSourceImpl(supabase.client)),
+            ),
+          ),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

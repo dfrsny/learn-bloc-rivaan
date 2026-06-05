@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learn_bloc/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:learn_bloc/features/auth/presentation/pages/signin_page.dart';
 import 'package:learn_bloc/features/auth/presentation/widgets/auth_field.dart';
 import 'package:learn_bloc/features/auth/presentation/widgets/auth_button.dart';
@@ -49,15 +51,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               SizedBox(height: 40),
-              AuthField(
-                hintText: "Username",
-                controller: usernameController,
-              ),
+              AuthField(hintText: "Username", controller: usernameController),
               SizedBox(height: 15),
-              AuthField(
-                hintText: "Email",
-                controller: emailController,
-              ),
+              AuthField(hintText: "Email", controller: emailController),
               SizedBox(height: 15),
               AuthField(
                 hintText: "Password",
@@ -65,15 +61,26 @@ class _SignUpPageState extends State<SignUpPage> {
                 isObscureText: true,
               ),
               SizedBox(height: 40),
-              AuthButton(buttonText: "Sign Up"),
+              AuthButton(
+                buttonText: "Sign Up",
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    context.read<AuthBloc>().add(
+                      AuthSignUp(
+                        username: usernameController.text.trim(),
+                        email: emailController.text.trim(),
+                        password: passwordController.text.trim(),
+                      ),
+                    );
+                  }
+                },
+              ),
               SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => SignInPage(),
-                    ),
+                    MaterialPageRoute(builder: (context) => SignInPage()),
                   );
                 },
                 child: RichText(
@@ -86,15 +93,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       TextSpan(
                         text: "Sign In",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                              color: AppPallete.gradient1,
-                              fontSize:
-                                  AppConstant.fontSizeBody,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: AppPallete.gradient1,
+                          fontSize: AppConstant.fontSizeBody,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
